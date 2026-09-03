@@ -1,8 +1,3 @@
-// Changes:
-// Make time central.
-// Add WiFi reading functionality, but only activated when a button is pressed, as I can safely assume that it
-// will be very Wi-Fi intensive if done constantly.
-
 // Add the Modules required
 #include <SPI.h>
 #include <Wire.h>
@@ -13,6 +8,9 @@
 #include <WiFi.h>
 #include "time.h"
 
+// Non-volatile storage
+#include <Preferences.h>
+
 // Determining the screen size
 #define WIDTH 128
 #define HEIGHT 64
@@ -22,22 +20,34 @@
 #define SCREEN_ADDRESS 0x3C
 Adafruit_SSD1306 display(WIDTH, HEIGHT, &Wire, OLED_RESET);
 
-// WiFi sign in, wonder if there is a way to do this.
-const char* ssid = "not-my-wifi";
-const char* password = "not-my-wifi-password";
+// WiFi credentials
+const char* ssid = "wifi-username";
+const char* password = "wifi-password";
 
 // NTP Server and Timezone
 const char* ntpServer = "pool.ntp.org";
 const long gmtOffset_sec = 0;        // Standard GMT offset in seconds
 const int daylightOffset_sec = 3600;  // Daylight savings offset in seconds
 
+// Uptime variables
+Preferences preferences;
+unsigned long historicalUptime = 0; // Cumulative uptime from previous boots in seconds
+unsigned long lastSaveTime = 0; // tracking interval saves
+const unsigned long SAVE_INTERVAL = 600000; // 10 minutes
+
 void settingsDisplay();
 void settingsWiFi();
 void settings();
 void getNetworkTime();
+void updateUpTime();
+unsigned long getTotalUptimeSeconds();
 
 void setup() {
   Serial.begin(115200);
+
+  // Load saved uptime from memory
+  preferences.begin("uptime", false);
+  historicalUptime = preferences.getULong("total_sec", 0);
   settings();
 }
 
@@ -51,6 +61,7 @@ void settings() {
   settingsWiFi();
 }
 
+// setting up display options
 void settingsDisplay() {
   if (!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
     Serial.println(F("SSD1306 allocation failed"));
@@ -66,6 +77,7 @@ void settingsDisplay() {
   delay(1000);
 }
 
+// setting up wifi options
 void settingsWiFi() {
   display.clearDisplay();
   display.setCursor(0, 0);
@@ -96,6 +108,27 @@ void settingsWiFi() {
   delay(2000);
 }
 
+void updateUptime(){
+  unsigned long currentMillis = millis();
+
+  // Save to flash every minute
+  if (currentMillis - lastSaveTime >= SAVE_INTERVAL) {
+    // Add 600 seconds to historical uptime
+    historicalUptime += (SAVE_INTERVAL / 1000);
+    preferences.putULong("total_sec", historicalUptime);
+
+    lastSaveTime = currentMillis;
+    }
+}
+
+unsigned long getTotalUptimeSeconds() {
+  unsigned long currentMillis = millis();
+  unsigned long unsavedSec = (currentMillis - lastSaveTime) / 1000;
+
+  return historicalUptime + unsavedSec;
+}
+
+// calling the network to discover the time
 void getNetworkTime() {
   struct tm timeinfo;
 
@@ -115,13 +148,27 @@ void getNetworkTime() {
   strftime(dateStr, sizeof(dateStr), "%a, %b %d %Y", &timeinfo);
   strftime(timeStr, sizeof(timeStr), "%H:%M", &timeinfo);
 
+  // controls the date
   display.setTextSize(1);
   display.setCursor(0, 0);
   display.println(dateStr);
 
-  display.setCursor(0, 24);
+  // centered time
+  display.setCursor(35, 24);
   display.setTextSize(2); // Larger font for clock
   display.println(timeStr);
 
+  // Total calculated cumulative operational time
+  unsigned long totalSec = getTotalUptimeSeconds();
+  unsigned long days = totalSec / 86400;
+  unsigned long hours = (totalSec % 86400) / 3600;
+  unsigned long minutes = (totalSec % 3600) / 60;
+
+  // Display total Uptime at the bottom
+  display.setTextSize(1);
+  display.setCursor(15, 48);
+  display.printf("Up: %lu d %lu h %lu m", days, hours, minutes);
+
   display.display(); // Push buffer to physical screen
 }
+
