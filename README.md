@@ -12,7 +12,6 @@ Also centred the text for the clock and uptime, so much better.
 
 **Proposed additions:**
   
-Button to turn off the display; it will still keep counting. When pressed again, it will turn the display back on.
-Another button to cycle different clock fronts, from the current size to just the clock or a larger size. I have not decided on this feature yet!
+Button to turn on a different mode: a timer. Where a button press increases the timer by 5 minutes, like a Pomodoro timer. Then press another button to accept. Would be a very interesting addition! some kind of speaker module to alert that the time is up.
 
 3D printing a shell. Will use Fusion360 to make the design and then print. Very excited!
