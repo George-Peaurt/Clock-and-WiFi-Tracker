@@ -14,3 +14,5 @@ Also centred the text for the clock and uptime, so much better.
   
 Button to turn off the display; it will still keep counting. When pressed again, it will turn the display back on.
 Another button to cycle different clock fronts, from the current size to just the clock or a larger size. I have not decided on this feature yet!
+
+3D printing a shell. Will use Fusion360 to make the design and then print. Very excited!
