@@ -1,3 +1,8 @@
+// Changes:
+// Make time central.
+// Add WiFi reading functionality, but only activated when a button is pressed, as I can safely assume that it
+// will be very Wi-Fi intensive if done constantly.
+
 // Add the Modules required
 #include <SPI.h>
 #include <Wire.h>
@@ -17,9 +22,9 @@
 #define SCREEN_ADDRESS 0x3C
 Adafruit_SSD1306 display(WIDTH, HEIGHT, &Wire, OLED_RESET);
 
-// WiFi credentials
-const char* ssid = "VM8259023_EXT";
-const char* password = "bcdUMetpbyf5brx6";
+// WiFi sign in, wonder if there is a way to do this.
+const char* ssid = "not-my-wifi";
+const char* password = "not-my-wifi-password";
 
 // NTP Server and Timezone
 const char* ntpServer = "pool.ntp.org";
