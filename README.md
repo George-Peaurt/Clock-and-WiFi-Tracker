@@ -6,11 +6,11 @@ This project pulls time from the NTP database and synchronises it with the inter
 
 **03/09/26:**
   
-  Added further functionality with a timer when started up for the first time that tracks how long the clock has been on for since the last launch. This helps keep track of how long I have been on my computer for... good for when I know I need to touch grass.
+Added further functionality with a timer when started up for the first time that tracks how long the clock has been on for since the last launch. This helps keep track of how long I have been on my computer for... good for when I know I need to touch grass.
 
 Also centred the text for the clock and uptime, so much better.
 
 **Proposed additions:**
   
-  Button to turn off the display; it will still keep counting. When pressed again, it will turn the display back on.
+Button to turn off the display; it will still keep counting. When pressed again, it will turn the display back on.
 Another button to cycle different clock fronts, from the current size to just the clock or a larger size. I have not decided on this feature yet!
